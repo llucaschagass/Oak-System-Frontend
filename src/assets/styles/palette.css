@@ -1,0 +1,19 @@
+:root {
+  --primary-color: #FF0000;
+  --dark-red: #D8292F;
+  
+  /* Cores Neutras */
+  --white: #FFFFFF;
+  --background-light: #f6f5f7;
+  --gray-light: #eee;
+  --gray-medium: #dcdcdc;
+  --gray-dark: #333;
+
+  /* Cores de Feedback */
+  --success-color: #4CAF50;
+  --error-color: #f44336;
+  --warning-color: #ff9800;
+
+  /* Fontes */
+  --font-primary: 'Montserrat', sans-serif;
+}
