@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import type { FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import styles from './AuthPage.module.css';
 import api from '../../../services/api';
 
 const AuthPage = () => {
   const [isSignUpActive, setIsSignUpActive] = useState(false);
+  const navigate = useNavigate();
 
   // Estados para o formulário de Login
   const [signInUsuario, setSignInUsuario] = useState('');
@@ -27,15 +30,20 @@ const AuthPage = () => {
         senha: signInSenha,
       });
       const token = response.data.token;
-      console.log('Login bem-sucedido! Token:', token);
       localStorage.setItem('authToken', token);
-      alert('Login realizado com sucesso!');
+      
+      navigate('/dashboard');
+
     } catch (error) {
-      console.error('Erro no login:', error);
-      alert('Falha no login. Verifique seu usuário e senha.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Falha no login. Verifique seu usuário e senha.',
+      });
     }
   };
 
+  // Função para lidar com o envio do formulário de registro
   const handleSignUpSubmit = async (event: FormEvent) => {
     event.preventDefault();
     try {
@@ -47,12 +55,16 @@ const AuthPage = () => {
         senha: signUpSenha,
       });
       const token = response.data.token;
-      console.log('Registro bem-sucedido! Token:', token);
       localStorage.setItem('authToken', token);
-      alert('Usuário registrado com sucesso!');
+
+      navigate('/dashboard');
+
     } catch (error) {
-      console.error('Erro no registro:', error);
-      alert('Falha no registro. Verifique os dados e tente novamente.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro no Registro',
+        text: 'Não foi possível registrar o usuário. Verifique os dados.',
+      });
     }
   };
 
