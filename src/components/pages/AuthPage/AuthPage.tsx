@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import styles from './AuthPage.module.css';
 import api from '../../../services/api';
+import { useAuth } from '../../../context/AuthContext';
 
 const AuthPage = () => {
   const [isSignUpActive, setIsSignUpActive] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   // Estados para o formulário de Login
   const [signInUsuario, setSignInUsuario] = useState('');
@@ -30,11 +32,12 @@ const AuthPage = () => {
         senha: signInSenha,
       });
       const token = response.data.token;
-      localStorage.setItem('authToken', token);
-      
+
+      login(token);
       navigate('/dashboard');
 
     } catch (error) {
+      console.error('Erro no login:', error);
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
@@ -43,7 +46,6 @@ const AuthPage = () => {
     }
   };
 
-  // Função para lidar com o envio do formulário de registro
   const handleSignUpSubmit = async (event: FormEvent) => {
     event.preventDefault();
     try {
@@ -55,11 +57,12 @@ const AuthPage = () => {
         senha: signUpSenha,
       });
       const token = response.data.token;
-      localStorage.setItem('authToken', token);
 
+      login(token);
       navigate('/dashboard');
 
     } catch (error) {
+      console.error('Erro no registro:', error);
       Swal.fire({
         icon: 'error',
         title: 'Erro no Registro',

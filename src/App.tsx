@@ -4,6 +4,7 @@ import DashboardPage from './components/pages/DashboardPage/DashboardPage';
 import ProdutosPage from './components/pages/ProdutosPage/ProdutosPage';
 import MainLayout from './components/pages/Layout/MainLayout';
 import ProtectedRoute from './config/ProtectedRoute';
+import CategoriasPage from './components/pages/CategoriasPage/CategoriasPage';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
           {
             path: '/produtos',
             element: <ProdutosPage />,
+          },
+          {
+            path: '/categorias',
+            element: <CategoriasPage />,
           },
         ],
       },
