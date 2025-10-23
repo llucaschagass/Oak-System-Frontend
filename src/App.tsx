@@ -6,6 +6,7 @@ import MainLayout from './components/pages/Layout/MainLayout';
 import ProtectedRoute from './config/ProtectedRoute';
 import CategoriasPage from './components/pages/CategoriasPage/CategoriasPage';
 import MovimentacoesPage from './components/pages/MovimentacoesPage/MovimentacoesPage';
+import RelatoriosPage from './components/pages/RelatoriosPage/RelatoriosPage';
 
 const router = createBrowserRouter([
   {
@@ -32,7 +33,10 @@ const router = createBrowserRouter([
           },
           { path: '/movimentacoes', 
             element: <MovimentacoesPage />
-          }
+          },
+          { path: '/relatorios', 
+            element: <RelatoriosPage /> 
+          },
         ],
       },
     ],
