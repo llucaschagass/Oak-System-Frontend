@@ -6,6 +6,13 @@
   overflow: hidden;
 }
 
+.logo {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
 .formContainer {
   position: absolute;
   top: 0;
@@ -92,8 +99,15 @@
 }
 
 @keyframes show {
-  0%, 49.99% { opacity: 0; z-index: 1; }
-  50%, 100% { opacity: 1; z-index: 5; }
+  0%, 49.99% {
+    opacity: 0;
+    z-index: 1;
+  }
+  
+  50%, 100% {
+    opacity: 1;
+    z-index: 5;
+  }
 }
 
 .rightPanelActive .overlay {
@@ -119,12 +133,27 @@
   text-align: center;
 }
 
+.formContainer h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 800;
+}
+
 .formContainer input {
   background-color: var(--gray-light);
   border: none;
-  padding: 12px 15px;
+  border-radius: 8px;
+  padding: 10px 15px;
   margin: 8px 0;
   width: 100%;
+  max-width: 340px;
+}
+
+.formContainer a {
+  color: var(--gray-dark);
+  font-size: 14px;
+  text-decoration: none;
+  margin: 15px 0;
 }
 
 .formContainer button {
@@ -149,4 +178,5 @@
 .ghost {
   background-color: transparent;
   border-color: var(--white);
+  color: var(--white);
 }
