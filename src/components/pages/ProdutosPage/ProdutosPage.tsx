@@ -4,6 +4,7 @@ import ReactModal from 'react-modal';
 import Swal from 'sweetalert2';
 import styles from './ProdutosPage.module.css';
 import api from '../../../services/api';
+import { MdAdd, MdEdit, MdDelete } from 'react-icons/md';
 
 ReactModal.setAppElement('#root');
 
@@ -27,6 +28,16 @@ type ProdutoFormData = Omit<Produto, 'id' | 'categoria'> & {
   categoriaId: string;
 };
 
+const unidadeOpcoes = [
+  "UN", // Unidade
+  "KG", // Kilograma
+  "LT", // Litro
+  "M",  // Metro
+  "M2", // Metro Quadrado
+  "CX", // Caixa
+  "PC"  // Peça
+];
+
 
 const ProdutosPage = () => {
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -41,7 +52,7 @@ const ProdutosPage = () => {
   const [formData, setFormData] = useState<ProdutoFormData>({
     nome: '',
     precoUnitario: 0,
-    unidade: '',
+    unidade: 'UN',
     quantidadeEmEstoque: 0,
     quantidadeMinima: 0,
     quantidadeMaxima: 0,
@@ -72,13 +83,17 @@ const ProdutosPage = () => {
     setIsEditing(false);
     setCurrentProdutoId(null);
     setFormData({
-      nome: '', precoUnitario: 0, unidade: '', quantidadeEmEstoque: 0,
+      nome: '', precoUnitario: 0, unidade: 'UN', quantidadeEmEstoque: 0,
       quantidadeMinima: 0, quantidadeMaxima: 0, categoriaId: '',
     });
   };
   
   const openAddModal = () => {
     setIsEditing(false);
+    setFormData({
+      nome: '', precoUnitario: 0, unidade: 'UN', quantidadeEmEstoque: 0,
+      quantidadeMinima: 0, quantidadeMaxima: 0, categoriaId: '',
+    });
     setModalIsOpen(true);
   };
 
@@ -154,7 +169,6 @@ const ProdutosPage = () => {
     });
   };
 
-
   if (loading) return <div className={styles.produtosContainer}><h1>Carregando...</h1></div>;
   if (error) return <div className={styles.produtosContainer}><h1>{error}</h1></div>;
 
@@ -162,7 +176,10 @@ const ProdutosPage = () => {
     <div className={styles.produtosContainer}>
       <header className={styles.header}>
         <h1>Gerenciar Produtos</h1>
-        <button className={styles.addButton} onClick={openAddModal}>+ Adicionar Produto</button>
+        <button className={styles.addButton} onClick={openAddModal}>
+          <MdAdd size={20} />
+          Adicionar Produto
+        </button>
       </header>
 
       <div className={styles.tableContainer}>
@@ -170,8 +187,9 @@ const ProdutosPage = () => {
           <thead>
             <tr>
               <th>Nome</th>
-              <th>Preço Unitário</th>
-              <th>Qtd. em Estoque</th>
+              <th className={styles.textRight}>Preço Unitário</th>
+              <th className={styles.textRight}>Qtd. em Estoque</th>
+              <th>Unidade</th>
               <th>Categoria</th>
               <th>Ações</th>
             </tr>
@@ -180,12 +198,17 @@ const ProdutosPage = () => {
             {produtos.map((produto) => (
               <tr key={produto.id}>
                 <td>{produto.nome}</td>
-                <td>R$ {produto.precoUnitario.toFixed(2)}</td>
-                <td>{produto.quantidadeEmEstoque}</td>
+                <td className={styles.textRight}>R$ {produto.precoUnitario.toFixed(2)}</td>
+                <td className={styles.textRight}>{produto.quantidadeEmEstoque}</td>
+                <td>{produto.unidade}</td>
                 <td>{produto.categoria.nome}</td>
                 <td className={styles.actions}>
-                  <a onClick={() => openEditModal(produto)}>Editar</a>
-                  <a onClick={() => handleDelete(produto.id)} className={styles.deleteLink}>Excluir</a>
+                  <button className={`${styles.iconButton} ${styles.editButton}`} onClick={() => openEditModal(produto)}>
+                    <MdEdit size={20} />
+                  </button>
+                  <button className={`${styles.iconButton} ${styles.deleteButton}`} onClick={() => handleDelete(produto.id)}>
+                    <MdDelete size={20} />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -197,20 +220,62 @@ const ProdutosPage = () => {
         isOpen={modalIsOpen}
         onRequestClose={resetFormAndCloseModal}
         contentLabel={isEditing ? "Editar Produto" : "Adicionar Novo Produto"}
-        style={{}}
+        style={{
+          overlay: { backgroundColor: 'rgba(0, 0, 0, 0.75)', zIndex: 1000 },
+          content: {
+            top: '50%', left: '50%', right: 'auto', bottom: 'auto',
+            marginRight: '-50%', transform: 'translate(-50%, -50%)',
+            width: '90%', maxWidth: '600px',
+            padding: '2rem', borderRadius: '8px', border: 'none'
+          },
+        }}
       >
         <form onSubmit={handleFormSubmit} className={styles.modalContent}>
           <h2>{isEditing ? "Editar Produto" : "Adicionar Novo Produto"}</h2>
-          <input name="nome" type="text" placeholder="Nome do Produto" value={formData.nome} onChange={handleFormChange} required />
-          <input name="precoUnitario" type="number" placeholder="Preço Unitário" value={formData.precoUnitario} onChange={handleFormChange} required />
-          <input name="unidade" type="text" placeholder="Unidade (ex: Kg, Un)" value={formData.unidade} onChange={handleFormChange} required />
-          <input name="quantidadeEmEstoque" type="number" placeholder="Qtd. em Estoque" value={formData.quantidadeEmEstoque} onChange={handleFormChange} required />
-          <input name="quantidadeMinima" type="number" placeholder="Qtd. Mínima" value={formData.quantidadeMinima} onChange={handleFormChange} required />
-          <input name="quantidadeMaxima" type="number" placeholder="Qtd. Máxima" value={formData.quantidadeMaxima} onChange={handleFormChange} required />
-          <select name="categoriaId" value={formData.categoriaId} onChange={handleFormChange} required>
-            <option value="">Selecione uma Categoria</option>
-            {categorias.map(cat => <option key={cat.id} value={cat.id}>{cat.nome}</option>)}
-          </select>
+          
+          <div className={styles.formGrid}>
+            
+            <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+              <label htmlFor="nome">Nome do Produto</label>
+              <input id="nome" name="nome" type="text" value={formData.nome} onChange={handleFormChange} required />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="precoUnitario">Preço Unitário (R$)</label>
+              <input id="precoUnitario" name="precoUnitario" type="number" step="0.01" value={formData.precoUnitario} onChange={handleFormChange} required />
+            </div>
+            
+            <div className={styles.formGroup}>
+              <label htmlFor="unidade">Unidade</label>
+              <select id="unidade" name="unidade" value={formData.unidade} onChange={handleFormChange} required>
+                {unidadeOpcoes.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+              </select>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="quantidadeEmEstoque">Qtd. em Estoque</label>
+              <input id="quantidadeEmEstoque" name="quantidadeEmEstoque" type="number" value={formData.quantidadeEmEstoque} onChange={handleFormChange} required />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="categoriaId">Categoria</label>
+              <select id="categoriaId" name="categoriaId" value={formData.categoriaId} onChange={handleFormChange} required>
+                <option value="">Selecione...</option>
+                {categorias.map(cat => <option key={cat.id} value={cat.id}>{cat.nome}</option>)}
+              </select>
+            </div>
+            
+            <div className={styles.formGroup}>
+              <label htmlFor="quantidadeMinima">Qtd. Mínima</label>
+              <input id="quantidadeMinima" name="quantidadeMinima" type="number" value={formData.quantidadeMinima} onChange={handleFormChange} required />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="quantidadeMaxima">Qtd. Máxima</label>
+              <input id="quantidadeMaxima" name="quantidadeMaxima" type="number" value={formData.quantidadeMaxima} onChange={handleFormChange} required />
+            </div>
+          </div>
+          
           <div className={styles.modalActions}>
             <button type="button" className={styles.cancelButton} onClick={resetFormAndCloseModal}>Cancelar</button>
             <button type="submit" className={styles.saveButton}>Salvar</button>
