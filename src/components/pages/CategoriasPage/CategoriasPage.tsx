@@ -4,10 +4,10 @@ import ReactModal from 'react-modal';
 import Swal from 'sweetalert2';
 import styles from './CategoriasPage.module.css';
 import api from '../../../services/api';
+import { MdAdd, MdEdit, MdDelete } from 'react-icons/md';
 
 ReactModal.setAppElement('#root');
 
-// Interfaces
 interface Categoria {
   id: number;
   nome: string;
@@ -18,12 +18,10 @@ interface Categoria {
 type CategoriaFormData = Omit<Categoria, 'id'>;
 
 const CategoriasPage = () => {
-  // Estados da página
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Estados do Modal
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentCategoriaId, setCurrentCategoriaId] = useState<number | null>(null);
@@ -58,6 +56,7 @@ const CategoriasPage = () => {
   
   const openAddModal = () => {
     setIsEditing(false);
+    setFormData({ nome: '', tamanho: 'Médio', embalagem: 'Plástico' });
     setModalIsOpen(true);
   };
 
@@ -125,7 +124,10 @@ const CategoriasPage = () => {
     <div className={styles.pageContainer}>
       <header className={styles.header}>
         <h1>Gerenciar Categorias</h1>
-        <button className={styles.addButton} onClick={openAddModal}>+ Adicionar Categoria</button>
+        <button className={styles.addButton} onClick={openAddModal}>
+          <MdAdd size={20} />
+          Adicionar Categoria
+        </button>
       </header>
 
       <div className={styles.tableContainer}>
@@ -145,8 +147,12 @@ const CategoriasPage = () => {
                 <td>{cat.tamanho}</td>
                 <td>{cat.embalagem}</td>
                 <td className={styles.actions}>
-                  <a onClick={() => openEditModal(cat)}>Editar</a>
-                  <a onClick={() => handleDelete(cat.id)} className={styles.deleteLink}>Excluir</a>
+                  <button className={`${styles.iconButton} ${styles.editButton}`} onClick={() => openEditModal(cat)}>
+                    <MdEdit size={20} />
+                  </button>
+                  <button className={`${styles.iconButton} ${styles.deleteButton}`} onClick={() => handleDelete(cat.id)}>
+                    <MdDelete size={20} />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -159,27 +165,43 @@ const CategoriasPage = () => {
         onRequestClose={resetFormAndCloseModal}
         contentLabel={isEditing ? "Editar Categoria" : "Adicionar Categoria"}
         style={{
-          overlay: { backgroundColor: 'rgba(0, 0, 0, 0.75)' },
+          overlay: { backgroundColor: 'rgba(0, 0, 0, 0.75)', zIndex: 1000 },
           content: {
             top: '50%', left: '50%', right: 'auto', bottom: 'auto',
             marginRight: '-50%', transform: 'translate(-50%, -50%)',
-            width: '30%', minWidth: '300px',
+            width: '90%', maxWidth: '500px',
+            padding: '2rem', borderRadius: '8px', border: 'none'
           },
         }}
       >
         <form onSubmit={handleFormSubmit} className={styles.modalContent}>
           <h2>{isEditing ? "Editar Categoria" : "Adicionar Nova Categoria"}</h2>
-          <input name="nome" type="text" placeholder="Nome da Categoria" value={formData.nome} onChange={handleFormChange} required />
-          <select name="tamanho" value={formData.tamanho} onChange={handleFormChange} required>
-            <option value="Pequeno">Pequeno</option>
-            <option value="Médio">Médio</option>
-            <option value="Grande">Grande</option>
-          </select>
-          <select name="embalagem" value={formData.embalagem} onChange={handleFormChange} required>
-            <option value="Lata">Lata</option>
-            <option value="Vidro">Vidro</option>
-            <option value="Plástico">Plástico</option>
-          </select>
+
+          <div className={styles.formGrid}>
+            <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+              <label htmlFor="nome">Nome da Categoria</label>
+              <input id="nome" name="nome" type="text" value={formData.nome} onChange={handleFormChange} required />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="tamanho">Tamanho</label>
+              <select id="tamanho" name="tamanho" value={formData.tamanho} onChange={handleFormChange} required>
+                <option value="Pequeno">Pequeno</option>
+                <option value="Médio">Médio</option>
+                <option value="Grande">Grande</option>
+              </select>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="embalagem">Embalagem</label>
+              <select id="embalagem" name="embalagem" value={formData.embalagem} onChange={handleFormChange} required>
+                <option value="Lata">Lata</option>
+                <option value="Vidro">Vidro</option>
+                <option value="Plástico">Plástico</option>
+              </select>
+            </div>
+          </div>
+
           <div className={styles.modalActions}>
             <button type="button" className={styles.cancelButton} onClick={resetFormAndCloseModal}>Cancelar</button>
             <button type="submit" className={styles.saveButton}>Salvar</button>
