@@ -4,6 +4,7 @@ import ReactModal from 'react-modal';
 import Swal from 'sweetalert2';
 import styles from './MovimentacoesPage.module.css';
 import api from '../../../services/api';
+import { MdAdd } from 'react-icons/md';
 
 ReactModal.setAppElement('#root');
 
@@ -27,13 +28,10 @@ interface MovimentacaoFormData {
 }
 
 const MovimentacoesPage = () => {
-  // Estados da página
   const [movimentacoes, setMovimentacoes] = useState<Movimentacao[]>([]);
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Estados do Modal
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [formData, setFormData] = useState<MovimentacaoFormData>({
     produtoId: '',
@@ -60,10 +58,12 @@ const MovimentacoesPage = () => {
     fetchData();
   }, []);
 
-  const openModal = () => setModalIsOpen(true);
+  const openModal = () => {
+    setFormData({ produtoId: '', quantidadeMovimentada: 1, tipoMovimentacao: 'ENTRADA' });
+    setModalIsOpen(true);
+  };
   const closeModal = () => {
     setModalIsOpen(false);
-    setFormData({ produtoId: '', quantidadeMovimentada: 1, tipoMovimentacao: 'ENTRADA' });
   };
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -99,7 +99,14 @@ const MovimentacoesPage = () => {
     if (!isoString) return '-';
     try {
       const date = new Date(isoString);
-      return date.toLocaleString('pt-BR');
+      const options: Intl.DateTimeFormatOptions = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      return date.toLocaleString('pt-BR', options);
     } catch (e) {
       return isoString;
     }
@@ -112,7 +119,10 @@ const MovimentacoesPage = () => {
     <div className={styles.pageContainer}>
       <header className={styles.header}>
         <h1>Movimentações de Estoque</h1>
-        <button className={styles.addButton} onClick={openModal}>+ Registrar Movimentação</button>
+        <button className={styles.addButton} onClick={openModal}>
+          <MdAdd size={20} />
+          Registrar Movimentação
+        </button>
       </header>
 
       <div className={styles.tableContainer}>
@@ -123,7 +133,7 @@ const MovimentacoesPage = () => {
               <th>Data/Hora</th>
               <th>Produto</th>
               <th>Tipo</th>
-              <th>Quantidade</th>
+              <th className={styles.textRight}>Quantidade</th>
             </tr>
           </thead>
           <tbody>
@@ -134,7 +144,7 @@ const MovimentacoesPage = () => {
                 <td className={mov.tipoMovimentacao === 'ENTRADA' ? styles.tipoEntrada : styles.tipoSaida}>
                   {mov.tipoMovimentacao}
                 </td>
-                <td>{mov.quantidadeMovimentada}</td>
+                <td className={styles.textRight}>{mov.quantidadeMovimentada}</td>
               </tr>
             ))}
           </tbody>
@@ -145,21 +155,44 @@ const MovimentacoesPage = () => {
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         contentLabel="Registrar Nova Movimentação"
-        style={{ }}
+        style={{
+          overlay: { backgroundColor: 'rgba(0, 0, 0, 0.75)', zIndex: 1000 },
+          content: {
+            top: '50%', left: '50%', right: 'auto', bottom: 'auto',
+            marginRight: '-50%', transform: 'translate(-50%, -50%)',
+            width: '90%', maxWidth: '500px',
+            padding: '2rem', borderRadius: '8px', border: 'none'
+          },
+        }}
       >
         <form onSubmit={handleFormSubmit} className={styles.modalContent}>
           <h2>Registrar Nova Movimentação</h2>
-          <select name="produtoId" value={formData.produtoId} onChange={handleFormChange} required>
-            <option value="">Selecione um Produto</option>
-            {produtos.map(prod => (
-              <option key={prod.id} value={prod.id}>{prod.nome}</option>
-            ))}
-          </select>
-          <input name="quantidadeMovimentada" type="number" min="1" placeholder="Quantidade" value={formData.quantidadeMovimentada} onChange={handleFormChange} required />
-          <select name="tipoMovimentacao" value={formData.tipoMovimentacao} onChange={handleFormChange} required>
-            <option value="ENTRADA">Entrada</option>
-            <option value="SAIDA">Saida</option>
-          </select>
+          
+          <div className={styles.formGrid}>
+            <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+              <label htmlFor="produtoId">Produto</label>
+              <select id="produtoId" name="produtoId" value={formData.produtoId} onChange={handleFormChange} required>
+                <option value="">Selecione um Produto...</option>
+                {produtos.map(prod => (
+                  <option key={prod.id} value={prod.id}>{prod.nome}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="quantidadeMovimentada">Quantidade</label>
+              <input id="quantidadeMovimentada" name="quantidadeMovimentada" type="number" min="1" value={formData.quantidadeMovimentada} onChange={handleFormChange} required />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="tipoMovimentacao">Tipo de Movimentação</label>
+              <select id="tipoMovimentacao" name="tipoMovimentacao" value={formData.tipoMovimentacao} onChange={handleFormChange} required>
+                <option value="ENTRADA">Entrada</option>
+                <option value="SAIDA">Saída</option>
+              </select>
+            </div>
+          </div>
+          
           <div className={styles.modalActions}>
             <button type="button" className={styles.cancelButton} onClick={closeModal}>Cancelar</button>
             <button type="submit" className={styles.saveButton}>Registrar</button>
