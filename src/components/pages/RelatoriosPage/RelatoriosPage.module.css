@@ -2,10 +2,12 @@
   padding: 2rem 3rem;
   width: 100%;
   height: 100%;
+  background-color: var(--background-light);
 }
 
 .header h1 {
   font-size: 2.5rem;
+  font-weight: 800;
   color: var(--gray-dark);
   margin-bottom: 2rem;
 }
@@ -14,16 +16,24 @@
   background-color: var(--white);
   border-radius: 10px;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid var(--gray-light);
   margin-bottom: 2rem;
 }
 
 .reportSection h2 {
   font-size: 1.5rem;
-  color: var(--primary-color);
+  color: var(--gray-dark);
   margin-bottom: 1rem;
-  border-bottom: 2px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
   padding-bottom: 0.5rem;
+}
+
+.reportGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
 .dataTable {
@@ -32,47 +42,89 @@
 }
 
 .dataTable th, .dataTable td {
-  padding: 0.8rem 1rem;
+  padding: 1rem 1.5rem;
   text-align: left;
   border-bottom: 1px solid var(--gray-light);
+  vertical-align: middle;
 }
 
 .dataTable th {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
   text-transform: uppercase;
   color: #777;
 }
 
+.dataTable tbody tr:hover {
+  background-color: #fcfcfc;
+}
+
+.textRight {
+  text-align: right;
+}
+
+.noData {
+  padding: 1rem;
+  text-align: center;
+  color: #777;
+}
+
 .totalValue {
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-align: right;
-    margin-top: 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: right;
+  margin-top: 1rem;
+  padding: 1rem 1.5rem;
+  background-color: #fcfcfc;
+  border-top: 2px solid var(--gray-light);
 }
 
-.championContainer {
-    display: flex;
-    justify-content: space-around;
-    gap: 1rem;
-    margin-top: 1rem;
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
 }
 
-.championCard {
-    background-color: var(--background-light);
-    padding: 1rem;
-    border-radius: 5px;
-    text-align: center;
-    flex: 1;
+.kpiCard {
+  background-color: var(--white);
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  border: 1px solid var(--gray-light); 
 }
 
-.championCard h3 {
-    font-size: 1rem;
-    color: #555;
-    margin-bottom: 0.5rem;
+.cardIconWrapper {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.championCard span {
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: var(--gray-dark);
+.cardContent {
+  flex-grow: 1;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  color: #555;
+  font-weight: 600;
+}
+
+.cardValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--gray-dark);
+  margin-top: 0.25rem;
+}
+
+.cardValue span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #777;
 }
